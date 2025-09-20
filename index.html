@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="kz">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>«TaiQazan» шайхана</title>
+<link rel="stylesheet" href="style.css">
+<link rel="shortcut icon" href="images/logo.jpeg" type="image/x-icon">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+<meta name="description" content="Қазақстандағы тегін онлайн кітап оқу. Ең жаңа, қызықты кітаптар сіз үшін.">
+<meta name="google-site-verification" content="FvlHWrvQ3hTeJFf6KKCrFLzTjBAOYlu9ixHQmFeb3Gk" />
+<title>Меню - TaiQazan шәйхана</title>
+<meta name="description" content="TaiQazan — Сарыағаш қаласындағы шәйхана-кафе. Бифштекс 1600₸, Манты 1700₸, Лаваш говяжий 1300₸. Ұлттық және заманауи тағамдар тиімді бағамен. Жеткізу қызметі бар.">
+
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #F6F6FC;
+    margin: 0;
+    padding: 10px;
+  }
+  h2 {font-size: 22px; font-weight: bold; margin: 15px 0;}
+
+  /* --- CATEGORY SCROLL --- */
+  .scroll-gallery {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 0;
+  }
+  .scroll-item {
+    flex: 0 0 auto;
+    text-align: center;
+    cursor: pointer;
+  }
+  .circle {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 3px solid rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 5px;
+    position: relative;
+    box-sizing: border-box;
+  }
+  .scroll-item.active .circle {
+    border-color: black;
+  }
+  .circle img {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .scroll-item p {
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .scroll-gallery::-webkit-scrollbar { display: none; }
+
+  /* --- MENU GRID --- */
+  .menu-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+  }
+  .product-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+    padding-bottom: 10px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s ease-out forwards;
+  }
+  .product-card:hover { transform: translateY(-3px); }
+  .product-image img {
+    width: 100%; height: 140px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+  }
+  .product-info { padding: 10px; }
+  .product-info h3 { font-size: 15px; font-weight: bold; margin: 0 0 5px; }
+  .price { font-size: 15px; font-weight: bold; background: #e0e0e055; padding: 5px 10px; border-radius: 4px; display: inline-block; text-align: center; width: 50%;}
+  .options {
+    display: flex; gap: 5px;
+    padding: 0 10px;
+    flex-wrap: wrap;
+  }
+  .options label {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-align: center;
+    padding: 4px 0;
+    cursor: pointer;
+    font-size: 13px;
+    background: #fff;
+    transition: background 0.2s ease;
+    min-width: 50px;
+  }
+  .options input[type="radio"] { display: none; }
+  .options input[type="radio"]:checked + label {
+    background: #fff;
+    border-color: #000;
+    font-weight: bold;
+  }
+
+  @media (max-width: 1024px) and (min-width: 481px) {
+    .menu-container { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .menu-container { grid-template-columns: repeat(2, 1fr);}
+    .product-image img { height: 120px; }
+    .product-info h3 { font-size: 14px; }
+    .price { font-size: 14px; }
+  }
+
+  @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+  /* --- POPUP --- */
+  .popup {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.popup-content {
+  background: #fff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease forwards;
+  max-height: 90%;
+  overflow-y: auto;
+  margin: auto;
+  box-sizing: border-box;
+}
+
+  .top-bar {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .popup-body {
+    display: flex;
+    flex-direction: column;
+  }
+  .popup-body img {
+    width: 100%;
+    height: auto;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-radius: 30px;
+  }
+  .popup-details { padding: 15px; }
+  .popup-details h2 { margin: 10px 0; }
+  .popup-price { font-weight: bold; font-size: 18px; color: #000; margin-bottom: 10px; }
+
+  /* @media (min-width: 768px) {
+    .popup-body {
+      flex-direction: row;
+    }
+    .popup-body img {
+      width: 50%;
+      height: auto;
+      border-radius: 20px 0 0 20px;
+    }
+    .popup-details {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  } */
+
+ @media (max-width: 768px) {
+  .popup-content {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+  }
+}
+
+  @keyframes slideIn {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .category-title {
+  width: 100%;
+  text-align: left;
+  font-size: 1.7em;
+  font-weight: bold;
+  margin: 50px 0 10px;
+  padding-left: 5px;
+  color: #333;
+  font-family: "kzmoumenta", sans-serif;
+  grid-column: 1/3;
+}
+
+@media (min-width:480px) {
+    .category-title {
+        grid-column: 1/4;
+    }
+}
+
+@media (min-width:1000px) {
+    .category-title {
+        grid-column: 1/5;
+    }
+}
+
+
+.header {
+      position: relative;
+      height: 100vh;
+      background: url('a61c6024-4302-4616-9933-d1a7289f0c8e.png') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+    }
+    .logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      color: green;
+      font-weight: bold;
+    }
+    .menu-btn {
+      background: green;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .menu-btn:hover {
+      background: darkgreen;
+    }
+    /* Карточкалар */
+    .cards {
+      padding: 50px 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      padding: 20px;
+    }
+    .card img {
+      width: 100%;
+      height: auto;
+      height: 200px;
+      object-fit: cover;
+      border-bottom: 1px solid #ddd;
+    }
+    .card h3 {
+      margin: 15px 0;
+      color: green;
+    }
+
+    .footer {
+  background: #fff;
+  padding: 20px;
+  margin-left: -10px;
+  margin-right: -10px;
+  margin-top: 50px;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  padding-bottom: 100px;
+}
+
+.footer-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.footer-logo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer-logo img {
+  height: 50px;
+  border-radius: 5px;
+  width: 60px;
+  height: 60px;
+    margin-bottom: 10px;
+}
+
+.footer-logo h2 {
+    margin-top: -5px;
+}
+
+.footer-socials a img {
+  width: 35px;
+  margin: 0 10px;
+  background: #f8f8f8;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.footer-socials a:hover img {
+  background: #e5e5e5;
+}
+
+.footer hr {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.footer-bottom .developer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-bottom .developer img {
+  height: 50px;
+
+}
+
+@media (min-width: 600px) {
+  .footer-top {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+
+/* Ортақ стиль */
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 50px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.3s ease;
+  z-index: 1000;
+}
+
+/* Сол жақтағы жоғары түймесі */
+.floating-btn.left {
+  left: 20px;
+  background: #3b3b3ba2;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  justify-content: center;
+  border: none;
+}
+
+/* Оң жақтағы WhatsApp */
+.floating-btn.right {
+  right: 20px;
+  background: #3b3b3ba2;
+}
+
+/* WhatsApp суреті */
+.floating-btn.right img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  margin-right: 3px;
+  z-index: inherit;
+}
+
+/* Пульс эффект */
+.floating-btn.right::before {
+  content: '';
+  position: absolute;
+  right: -2px;
+  width: 55px;
+  height: 55px;
+  background: #006301;
+  border-radius: 50%;
+  animation: pulse 4s infinite ease-out;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1);
+    opacity: 1.5;
+  }
+
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* Актив кезде */
+.floating-btn.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+.navi img {
+    width: 50px;
+    border-radius: 5px;
+    margin-left: 15px;
+}
+    
+.navi {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 70px;
+    align-items: center;
+    background-color: #ffffff;
+    margin-bottom: 0px;
+    margin-left: -10px;
+    margin-right: -10px;
+    margin-top: 0px;
+    margin-bottom: 20px;
+    box-shadow: 0px 0px 3px 0px rgb(223, 223, 223) ;
+    border-radius: 10px;
+}
+
+.head {
+  display: flex;
+  justify-content: center;
+}
+
+.navi {
+    
+}
+
+
+
+
+</style>
+</head>
+
+  
+       
+
+<body>
+
+     <div class="head">
+          <div class="navi">
+              <img src="images/logo1.jpeg" alt="" style="object-fit: cover; width: 60px; height: 60px;object-position: center; margin-left: 10px;"> 
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #f1f1f1; border-radius: 50px; padding: 5px; padding-left: 10px; padding-right: 10px; display: flex; align-items: center; justify-content: space-between; font-size: 1em; margin-right: 10px;">
+                <ion-icon size="small" name="ios-globe" style="margin-right: 4px;"></ion-icon>
+                kz
+              </a>
+              <ul class="dropdown-menu" style="padding-left: 10px; margin-right: 50px;">
+                  <li><a class="dropdown-item" href="/" style="font-weight: bold; background-color: #f1f1f1; border-radius: 30px; width: 80%;">🇰🇿 Қазақша</a></li>
+                  <li><a class="dropdown-item" href="ru.html">🇷🇺 Орысша</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <!-- <li><a class="dropdown-item" href="#"></a></li> -->
+              </ul>
+          </div>
+        </div>
+    
+
+
+
+
+<header>
+
+<div id="carouselExampleDark" class="carousel carousel-fade slide" style="margin-bottom: 30px;" >
+ 
+  <div class="carousel-inner">
+    <div class="carousel-item active" data-bs-interval="10000">
+      <img src="https://inbusiness.kz/uploads/2024-3/DqSzFh5b.webp" class="d-block w-100" alt="..." style="border-radius: 10px;">
+      <!-- <div class="carousel-caption d-none d-md-block">
+        <h5>First slide label</h5>
+        <p>Some representative placeholder content for the first slide.</p>
+      </div> -->
+    </div>
+    <!-- <div class="carousel-item" data-bs-interval="2000">
+      <img src="head-2.jpg" class="d-block w-100" alt="..." style="border-radius: 10px;">
+      <div class="carousel-caption d-none d-md-block">
+        <h5>Second slide label</h5>
+        <p>Some representative placeholder content for the second slide.</p>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <img src="head-3.jpg" class="d-block w-100" alt="..." style="border-radius: 10px;">
+      <div class="carousel-caption d-none d-md-block">
+        <h5>Third slide label</h5>
+        <p>Some representative placeholder content for the third slide.</p>
+      </div>
+    </div> -->
+  </div>
+  <!-- <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button> -->
+</div>
+
+</header>
+<!-- <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Link
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul> -->
+          
+        
+
+
+<!-- CATEGORY SCROLL -->
+<div class="scroll-gallery">
+  <div class="scroll-item active" onclick="showCategory('susyn', this)">
+    <div class="circle"><img src="data:image/jpeg;base64,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" alt=""></div><p>Ұлттық <br> Сусындар</p>
+  </div>
+  <div class="scroll-item" onclick="showCategory('sut', this)">
+    <div class="circle"><img src="https://www.gov.kz/uploads/2024/1/15/7bad28ca9544706656b4f62366cf35b7_original.1099181.jpg" alt=""></div><p>Сүтті <br> тағамдар</p>
+  </div>
+  <div class="scroll-item" onclick="showCategory('desert', this)">
+    <div class="circle"><img src="https://food.pibig.info/uploads/posts/2023-04/1681301108_food-pibig-info-p-kospa-kazakhskoe-blyudo-pinterest-4.jpg" alt=""></div><p>Десерттер</p>
+  </div>
+  
+  
+  
+</div>
+
+
+<!-- MENU -->
+<div class="menu-container">
+  <h2 class="category-title susyn-title">Ұлттық Сусындар</h2>
+  <h2 class="category-title sut-title" style="display:none;">Сүтті тағамдар</h2>
+  <h2 class="category-title desert-title" style="display:none;">Десерттер</h2>
+  
+
+
+
+  <!-- data-ingredients="Ұн, қант" -->
+<!-- Ұлттық сусындар: <br>
+Қымыз 0,5л 800 <br>
+Қымыз 1л 1400 <br>
+Шұбат  0,5л 800 <br>
+Шұбат 1л 1400 <br> <br>
+
+Сүт тағамдары: <br>
+Құрт 0,5кг 2300 <br>
+Құрт 1кг 4500 <br>
+Сары май 1кг 6500 <br> 
+Ірімшік 1кг 3500 <br> <br>
+
+Десерт тағамдары: <br>
+Жент 0,5кг 1100 <br>
+Талқан 1кг 1100 <br>
+Тары 1кг 1100 <br>
+Бал 1кг 2400 <br>
+Рафаэлло 0,5кг 1700 <br> -->
+
+
+<!-- Қазақ сусындары -->
+  <div class="product-card susyn" data-ingredients="Ұлттық Сусын" onclick="openPopup(1)">
+    <div class="product-image"><img src="images/kymyran.webp"></div>
+    <div class="product-info"><h3>Қымыз</h3><div class="price" id="price1">800 ₸</div></div>
+    <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="f1" id="f1a" checked onchange="updatePrice(1, 800)"><label for="f1a">0,5 литр</label>
+      <input type="radio" name="f1" id="f1b" onchange="updatePrice(1, 1400)"><label for="f1b">1 литр</label>
+    </div>
+  </div>
+
+  <div class="product-card susyn" data-ingredients="Ұлттық Сусын" onclick="openPopup(2)">
+    <div class="product-image"><img src="https://ken-zhyloi.kz/images/shubat1.jpg"></div>
+    <div class="product-info"><h3>Шұбат</h3><div class="price" id="price2">800 ₸</div></div>
+    <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="f2" id="f2a" checked onchange="updatePrice(2, 800)"><label for="f2a">0,5 литр</label>
+      <input type="radio" name="f2" id="f2b" onchange="updatePrice(2, 1400)"><label for="f2b">1 литр</label>
+    </div>
+  </div>
+  
+
+  <!-- Сүтті тағамдар -->
+  <div class="product-card sut" style="display:none" data-ingredients="Сүтті тағам" onclick="openPopup(3)">
+    <div class="product-image"><img src="images/kurt.jpeg"></div>
+    <div class="product-info"><h3>Құрт</h3><div class="price" id="price3">2 300 ₸</div></div>
+    <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="b1" id="b1a" checked onchange="updatePrice(3, 2300)"><label for="b1a">0,5кг</label>
+      <input type="radio" name="b1" id="b1b" onchange="updatePrice(3, 4500)"><label for="b1b">1кг</label>
+    </div>
+  </div>
+  <div class="product-card sut" style="display:none" data-ingredients="Сүтті тағам" onclick="openPopup(4)">
+    <div class="product-image"><img src="https://www.gov.kz/uploads/2023/11/21/7f596ed8529fbb1616196a4e2ccb6903_original.90837.jpg"></div>
+    <div class="product-info"><h3>Сары май</h3><div class="price" id="price4">6 500 ₸</div></div>
+    <!-- <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="b2" id="b2a" checked onchange="updatePrice(2, 500)"><label for="b2a">1кг</label>
+      <input type="radio" name="b2" id="b2b" onchange="updatePrice(2, 2000)"><label for="b2b">5 дана</label>
+    </div> -->
+  </div>
+  <div class="product-card sut" style="display:none" data-ingredients="Сүтті тағам" onclick="openPopup(5)">
+    <div class="product-image"><img src="https://massaget.kz/userdata/news/news_12641/photo.jpg"></div>
+    <div class="product-info"><h3>Ірімшік</h3><div class="price" id="price5">3 500 ₸</div></div>
+    <!-- <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="b2" id="b2a" checked onchange="updatePrice(5, 500)"><label for="b2a">1кг</label>
+      <input type="radio" name="b2" id="b2b" onchange="updatePrice(5, 2000)"><label for="b2b">5 дана</label>
+    </div> -->
+  </div>
+  
+  
+  <!-- Десерт тағамдары -->
+  <div class="product-card desert" style="display:none" data-ingredients="Десерт" onclick="openPopup(6)">
+    <div class="product-image"><img src="https://ilovekg.com/images/food/zhent.webp"></div>
+    <div class="product-info"><h3>Жент</h3><div class="price" id="price6">3 500 ₸</div></div>
+    <!-- <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="b2" id="b2a" checked onchange="updatePrice(6, 500)"><label for="b2a">1кг</label>
+      <input type="radio" name="b2" id="b2b" onchange="updatePrice(6, 2000)"><label for="b2b">5 дана</label>
+    </div> -->
+  </div>
+  <div class="product-card desert" style="display:none" data-ingredients="Десерт" onclick="openPopup(7)">
+    <div class="product-image"><img src="https://informburo.kz/storage/photos/83/main/Aid0BNeS2DUuiCXCEqCuvkQC6pqdvulXes6ZExfU.png"></div>
+    <div class="product-info"><h3>Талқан</h3><div class="price" id="price7">1 100 ₸</div></div>
+    <!-- <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="b2" id="b2a" checked onchange="updatePrice(7, 500)"><label for="b2a">1кг</label>
+      <input type="radio" name="b2" id="b2b" onchange="updatePrice(7, 2000)"><label for="b2b">5 дана</label>
+    </div> -->
+  </div>
+  <div class="product-card desert" style="display:none" data-ingredients="Десерт" onclick="openPopup(8)">
+    <div class="product-image"><img src="https://qamshy.kz/image/2019/10/21/crop-36_15_1045x1859_qyrmangha-qyzyl-tary-toltyryluda.jpeg"></div>
+    <div class="product-info"><h3>Тары</h3><div class="price" id="price8">1 100 ₸</div></div>
+    <!-- <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="b2" id="b2a" checked onchange="updatePrice(8, 500)"><label for="b2a">1кг</label>
+      <input type="radio" name="b2" id="b2b" onchange="updatePrice(8, 2000)"><label for="b2b">5 дана</label>
+    </div> -->
+  </div>
+  <div class="product-card desert" style="display:none" data-ingredients="Десерт" onclick="openPopup(9)">
+    <div class="product-image"><img src="https://kubnews.ru/upload/dev2fun.imagecompress/webp/iblock/239/cfkqy7anjbrmakbi6qutao22s3pwrghj.webp"></div>
+    <div class="product-info"><h3>Бал</h3><div class="price" id="price9">2 400 ₸</div></div>
+    <!-- <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="b2" id="b2a" checked onchange="updatePrice(9, 500)"><label for="b2a">1кг</label>
+      <input type="radio" name="b2" id="b2b" onchange="updatePrice(9, 2000)"><label for="b2b">5 дана</label>
+    </div> -->
+  </div>
+
+  <div class="product-card desert" style="display:none" data-ingredients="Десерт" onclick="openPopup(10)">
+    <div class="product-image"><img src="https://prostokvashino.ru/upload/resize_cache/iblock/8d4/800_800_0/8d46aea3506c36d627cf67df27b62e45.jpg"></div>
+    <div class="product-info"><h3>Рафаэлло</h3><div class="price" id="price10">1 700 ₸</div></div>
+    <!-- <div class="options" onclick="event.stopPropagation();">
+      <input type="radio" name="b3" id="b3a" checked onchange="updatePrice(10, 1700)"><label for="b3a">0,5кг</label>
+      <input type="radio" name="b3" id="b3b" onchange="updatePrice(10, 3000)"><label for="b3b">1кг</label>
+    </div> -->
+  </div>
+  
+
+
+
+
+
+
+</div>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-logo">
+      <img src="images/logo1.jpeg" alt="Kausar">
+      <h2>DasturlyDam</h2>
+    </div>
+    <div class="footer-socials">
+      <a href="https://www.instagram.com/p/DJciwrWoHCW/?igsh=YTY2ejU4NzRsbmI=" target="_blank"><img src="images/instagram-brands-solid-full.svg" alt="Instagram"></a>
+      <a href="/" target="_blank"><img src="images/tiktok-brands-solid-full.svg" alt="TikTok"></a>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="footer-bottom">
+    <p class="lora">©2025 DasturlyDam сатылым желісі</p>
+    <div class="developer">
+      <span class="alice" style="font-size: 1.2em;">Сайтты жасаған:</span>
+      <a href="https://wa.me/77781473353?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20%D0%9C%D0%B5%D0%BD%20%D0%A2%D0%B0%D0%B9%D2%9A%D0%B0%D0%B7%D0%B0%D0%BD%20%D1%81%D0%B0%D0%B9%D1%82%D1%8B%D0%BD%D0%B0%D0%BD%20%D3%A9%D1%82%D1%82%D1%96%D0%BC!%20" target="_blank" style="border-radius: 0px;"><img src="images/Frame 43.jpg" alt="NAQTY.KZ"></a>
+    </div>
+  </div>
+</footer>
+
+
+<!-- Сол жақтағы "Жоғары" батырмасы -->
+
+<button class="floating-btn left" id="scrollTopBtn">↑</button>
+
+<!-- Оң жақтағы WhatsApp батырмасы -->
+
+<a href="https://wa.me/77476208621?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1
+%D0%B5!%20%D0%9C%D0%B5%D0%BD%20%D1%82%D0%B0%D0%BF%D1%81%D1%8B%D1%80%D1%8B%D1%81%20%D0%B1
+%D0%B5%D1%80%D0%B5%D0%B9%D1%96%D0%BD%20%D0%B4%D0%B5%D0%B3%D0%B5%D0%BD%20%D0%B5%D0%B4%D1%96%D0%BC%3F" class="floating-btn right" id="orderBtn" style="padding: 0px;" target="_blank">
+  <span style="margin-left: 10px; z-index: 10;" class="lora">Тапсырыс беру</span>
+  <img src="images/whats.jpg" alt="WhatsApp">
+</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <div class="top-bar"><button class="back-btn" onclick="closePopup()">← Артқа</button></div>
+    <div class="popup-body">
+      <img id="popupImg" src="" alt="">
+      <div class="popup-details">
+        <h2 id="popupTitle"></h2>
+        <p class="popup-price" id="popupPrice"></p>
+        <p id="popupDesc"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+function showCategory(category, element) {
+  // Барлық карточкаларды жасыру
+  document.querySelectorAll('.product-card').forEach(card => {
+    card.style.display = card.classList.contains(category) ? 'block' : 'none';
+  });
+
+  // Актив классты жаңарту
+  document.querySelectorAll('.scroll-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  element.classList.add('active');
+
+  // Тақырып ауыстыру
+  document.querySelectorAll('.category-title').forEach(title => {
+    title.style.display = title.classList.contains(category + '-title') ? 'block' : 'none';
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+<script>
+
+
+
+function updatePrice(id, price) {
+  document.getElementById("price"+id).textContent = price.toLocaleString()+" ₸";
+}
+function openPopup(id) {
+  const card = document.querySelector(`.product-card:nth-of-type(${id})`);
+  document.getElementById("popupImg").src = card.querySelector("img").src;
+  document.getElementById("popupTitle").textContent = card.querySelector("h3").textContent;
+  document.getElementById("popupPrice").textContent = card.querySelector(".price").textContent;
+  document.getElementById("popupDesc").textContent = "Тақырып: " + card.dataset.ingredients;
+  document.getElementById("popup").style.display = "flex";
+}
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
+}
+function filterCategory(cat, elem) {
+  document.querySelectorAll(".scroll-item").forEach(i=>i.classList.remove("active"));
+  elem.classList.add("active");
+  document.querySelectorAll(".product-card").forEach(c=>{
+    c.style.display = c.classList.contains(cat) ? "block":"none";
+  });
+}
+
+
+
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+
+<script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+
+
+<script>
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+const orderBtn = document.getElementById('orderBtn');
+const header = document.querySelector('header');
+
+window.addEventListener('scroll', () => {
+  const headerBottom = header.offsetHeight;
+  if (window.scrollY > headerBottom) {
+    scrollTopBtn.classList.add('show');
+    orderBtn.classList.add('show');
+  } else {
+    scrollTopBtn.classList.remove('show');
+    orderBtn.classList.remove('show');
+  }
+});
+
+scrollTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+
+
+</body>
+</html>
